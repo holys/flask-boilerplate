@@ -1,0 +1,1 @@
+# e.g. EXAMPLE_CONSTANT = 42

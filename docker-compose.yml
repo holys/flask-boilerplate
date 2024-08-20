@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  mysql_db:  # if you change this, you need to change the `SQLALCHEMY_DATABASE_URI` and `external_links` in the app service
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: flask-boilerplate
+      MYSQL_DATABASE: flask-boilerplate # Change this to your database name
+      MYSQL_USER: flask-boilerplate # Change this to your database user
+      MYSQL_PASSWORD: flask-boilerplate # Change this to your database password
+    ports:
+      - '3307:3306'   # Change this to your desired port
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    # run this to build your own image(you can change the image tag):
+    # > docker build -t flask-boilerplate --no-cache .
+    image: flask-boilerplate:latest  # Change this to your image name
+    restart: always
+    environment:
+      SQLALCHEMY_DATABASE_URI: mysql+pymysql://flask-boilerplate:flask-boilerplate@mysql_db:3306/flask-boilerplate  # Change this to your database URI
+    ports:
+      - '6000:6000'
+    external_links:
+      - mysql_db:mysql_db
+    depends_on:
+      - mysql_db
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:
